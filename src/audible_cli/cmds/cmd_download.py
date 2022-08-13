@@ -296,6 +296,15 @@ async def download_aaxc(
     if url is None or codec is None or lr is None:
         url, codec, lr = await item.get_aaxc_url(quality)
         counter.count_voucher()
+        
+    anyQuality = pathlib.Path( output_dir) / f"{base_filename}-*.aaxc"
+    if len(glob.glob( str(anyQuality )))>0 and not overwrite_existing:
+        logger.info( f"{anyQuality} exists, download skipped." )
+        return
+    anyQuality = pathlib.Path( output_dir) / f"{base_filename}-*.mp3"
+    if len(glob.glob( str(anyQuality )))>0 and not overwrite_existing:
+        logger.info( f"{anyQuality} exists, download skipped." )
+        return
 
     if codec.lower() == "mpeg":
         ext = "mp3"

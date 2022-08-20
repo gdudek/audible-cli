@@ -5,6 +5,7 @@ import json
 import pathlib
 import logging
 
+import glob
 import aiofiles
 import click
 import httpx
@@ -297,6 +298,12 @@ async def download_aaxc(
         url, codec, lr = await item.get_aaxc_url(quality)
         counter.count_voucher()
 
+    # inhibit download if there is an aaxc at any quality, even ones we don't expect
+    anyQuality = pathlib.Path( output_dir) / f"{base_filename}-*.aaxc"
+    if len(glob.glob( str(anyQuality )))>0 and not overwrite_existing:
+        logger.info( f"{anyQuality} exists, download skipped. GD" ) #GD
+        return
+    
     if codec.lower() == "mpeg":
         ext = "mp3"
     else:
